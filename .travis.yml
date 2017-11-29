@@ -2,3 +2,10 @@ language: node_js
 node_js: node
 services:
 - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: lf9sQPAq/vmFcARxE+IuHO5B/k3tdGGhsZVREH9pFfiAxEYM/P01/trjwiC+p7jk6R6oeI4l3gxFWJ26DcQ22CsKgPorsCEZMBr67uVl/5PsUVo9DIZKRO4YXvWSR7s1gMqmTqlSz19HYIINlS20XsGlb9gk13lM66luRc8mmID5MZub79k0tlkc58mPq/U5nsWYdkEzS6vjVnZGgP7P8kg30FbDbHxCAp3a7zYxpSOCNsbmXf2YOcEfRp67TNHgEg+4sD2BwJGpBBjbW5iuc5QtcEkYoPO60xPiVnzI+lvMJ0EqHx9TqefiJ8f7X/6VU8K6SJo+BpP6qS4iRXDxyFEoRZT63+JavjoC7fcgDxhGvepuGyvGYdUMYjTBVyI3wtTLq0okt74ws4N1Q8U8PkRBGGjo/k4Fwq+K2buaGb8spmMSBr20N9aqYsLVD7u6TS63s+B4oe8DxLmsM84LrLTS3Um6Tj49EjIBdJM5Ph9hNzxegey6V+jO/UQt8KY0Y74SyuUF61g+m4+mRU6OIK9yUZFBYQ2vmy/qammmGWzD6n1P4P1Bq3ogHnl3irw0yEdGNhvAn4rKDCS/IWIVmDYS7XmVyY6+vOC+HL+bvhkmjQyx+0WEeHncDYcQbYnvY08BA0U1O49eXfp7s+hDmDjn26DqJK19THA9tYsncdw=
+  app: aqueous-badlands-89875
+  on:
+    repo: thinkful-cohort-16/mongoose-blog-app-testing
