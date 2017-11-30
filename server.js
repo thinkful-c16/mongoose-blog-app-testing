@@ -61,11 +61,11 @@ passport.use(localStrategy);
 const localAuth = passport.authenticate('local', { session: false});
 
 //----------------------------------------//
-app.get('/api/public', function (req, res) {
+app.get('/public', function (req, res) {
   res.send( 'Hello World!' );
 });
 
-app.post('api/users', function(req, res) {
+app.post('/users', function(req, res) {
   
   let {username, password, firstName, lastName} = req.body;
 
