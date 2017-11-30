@@ -8,6 +8,7 @@
     "test": "mocha --exit"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.15.2",
     "express": "^4.12.4",
     "faker": "^4.1.0",
@@ -15,6 +16,7 @@
     "mongoose": "^4.13.5",
     "morgan": "^1.7.0",
     "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "uuid": "^2.0.3"
   },
   "keywords": [

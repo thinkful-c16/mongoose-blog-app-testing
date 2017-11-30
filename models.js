@@ -1,6 +1,34 @@
 'use strict';
 
+const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+
+const userSchema = new mongoose.Schema({
+  username: {type: String, required: true, unique: true},
+  password: {type: String, required: true},
+  firstName: {type: String, default: ''},
+  lastName: {type: String, default: ''}
+});
+
+userSchema.methods.apiRepr = function () {
+  return {
+    id: this._id,
+    username: this.username,
+    firstName: this.firstName,
+    lastName: this.lastName
+  };
+};
+
+userSchema.methods.validatePassword = function(password) {
+  return bcrypt.compare(password, this.password);
+};
+
+userSchema.statics.hashPassword = function(password) {
+  return bcrypt.hash(password, 10);
+};
+
+//-----------------------------------------//
 
 const blogPostSchema = mongoose.Schema({
   author: {
@@ -27,6 +55,7 @@ blogPostSchema.methods.apiRepr = function() {
   };
 };
 
+const UserModel = mongoose.model('User', userSchema);
 const BlogPost = mongoose.model('BlogPost', blogPostSchema, 'blog-posts');
 
-module.exports = {BlogPost};
+module.exports = {BlogPost, UserModel};

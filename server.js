@@ -4,9 +4,12 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const passport = require('passport');
 
+const { Strategy: LocalStrategy } = require('passport-local');
 const {DATABASE_URL, PORT} = require('./config');
 const {BlogPost} = require('./models');
+const {UserModel} = require('./models');
 
 const app = express();
 
@@ -15,6 +18,93 @@ app.use(bodyParser.json());
 
 mongoose.Promise = global.Promise;
 
+//------------------------------------//
+
+const localStrategy = new LocalStrategy((username, password, done) => {
+  let user;
+  UserModel
+    .findOne({username})
+    .then(results => {
+      user = results;
+
+      if (!user) {
+        return Promise.reject({
+          reason: 'LoginError',
+          message: 'Incorrect username',
+          location: 'username'
+        });
+      }
+
+      return user.validatePassword(password);
+    })
+    .then(isValid => {
+      if (!isValid) {
+        return Promise.reject({
+          reason: 'LoginError',
+          message: 'Incorrect password',
+          location: 'password'
+        });
+      }
+      return done(null, user);
+    })
+    .catch(err => {
+      if (err.reason === 'LoginError') {
+        return done(null, false);
+      }
+
+      return done(err);
+    });
+});
+
+passport.use(localStrategy);
+
+const localAuth = passport.authenticate('local', { session: false});
+
+//----------------------------------------//
+app.get('/api/public', function (req, res) {
+  res.send( 'Hello World!' );
+});
+
+app.post('api/users', function(req, res) {
+  
+  let {username, password, firstName, lastName} = req.body;
+
+  UserModel
+    .find({ username })
+    .count()
+    .then(count => {
+      if (count > 0) {
+        return Promise.reject({
+          code: 400,
+          resason: 'BadRequest',
+          message: 'Username already taken',
+          location: 'username'
+        });
+      }
+      //if no existing user, hash password
+      return UserModel.hashPassword(password);
+    })
+    .then(digest => {
+      return UserModel
+        .create({
+          username,
+          password: digest,
+          firstName,
+          lastName
+        });
+    })
+    .then(user => {
+      return res.status(201).json(user.apiRepr());
+    })
+    .catch(err => {
+      if (err.reason === 'ValidationError') {
+        return res.status(err.code).json(err);
+      }
+      res.status(500).json({code: 500, message: 'Internal server error'});
+    });
+});
+
+//-------------------------------------//
 
 app.get('/posts', (req, res) => {
   BlogPost
@@ -157,6 +247,6 @@ function closeServer() {
 // runs. but we also export the runServer command so other code (for instance, test code) can start the server as needed.
 if (require.main === module) {
   runServer().catch(err => console.error(err));
-};
+}
 
 module.exports = {runServer, app, closeServer};
