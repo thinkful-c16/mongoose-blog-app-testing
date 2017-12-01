@@ -1,4 +1,5 @@
 'use strict';
+console.log('server running');
 
 const bodyParser = require('body-parser');
 const express = require('express');
@@ -6,7 +7,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const passport = require('passport');
 
-const { Strategy: LocalStrategy } = require('passport-local');
+const LocalStrategy = require('passport-local').Strategy;
 const {DATABASE_URL, PORT} = require('./config');
 const {BlogPost} = require('./models');
 const {UserModel} = require('./models');
@@ -21,6 +22,7 @@ mongoose.Promise = global.Promise;
 //------------------------------------//
 
 const localStrategy = new LocalStrategy((username, password, done) => {
+  console.log('local strategy running');
   let user;
   UserModel
     .findOne({username})
@@ -132,12 +134,11 @@ app.post('/posts',
   //passport.authenticate middleware to protect endpoint
   localAuth,
   (req, res) => {
-    const requiredFields = ['title', 'content', 'author'];
+    const requiredFields = ['title', 'content'];
     for (let i=0; i<requiredFields.length; i++) {
       const field = requiredFields[i];
       if (!(field in req.body)) {
         const message = `Missing \`${field}\` in request body`;
-        console.error(message);
         return res.status(400).send(message);
       }
     }
